@@ -1,0 +1,831 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ứng dụng Đặt lịch & Quản trị</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to right, #eaf4ff, #ffffff);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+            .navbar .logo {
+                font-weight: 600;
+                font-size: 20px;
+                color: #0069ff;
+            }
+
+            .navbar .nav-links a {
+                margin-left: 20px;
+                text-decoration: none;
+                color: #333;
+                font-weight: 500;
+                cursor: pointer;
+                transition: color 0.3s;
+            }
+
+                .navbar .nav-links a:hover, .navbar .nav-links a.active {
+                    color: #0069ff;
+                }
+
+        .admin-link {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+            border: 1px solid #dc3545;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+            .admin-link:hover {
+                background-color: #dc3545;
+                color: white !important;
+            }
+
+        .main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .layout {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            gap: 40px;
+        }
+
+        .sidebar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+            background: #f0f6ff;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.03);
+        }
+
+            .sidebar h2 {
+                font-size: 24px;
+                color: #0069ff;
+            }
+
+            .sidebar p {
+                font-size: 16px;
+                color: #555;
+                margin-top: 10px;
+                line-height: 1.6;
+            }
+
+        .content {
+            flex: 1;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        input, textarea, button, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #0069ff;
+            color: #fff;
+            border: none;
+            transition: background 0.3s ease;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+            button:hover {
+                background-color: #0055cc;
+            }
+
+        .link-btn {
+            background: none;
+            color: #0069ff;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            font-size: 14px;
+            text-decoration: underline;
+            width: auto;
+            margin-top: 5px;
+        }
+
+        .login-links-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        ul {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .schedule-item {
+            margin-bottom: 15px;
+            border-left: 4px solid #0069ff;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .msg-item {
+            margin-bottom: 15px;
+            border-left: 4px solid #28a745;
+            background: #f0fff4;
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .msg-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: #555;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f1f1f1;
+            color: #888;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .badge-admin {
+            background: #343a40;
+            color: #fff;
+        }
+
+        .badge-user {
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .badge-lock {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-right: 5px;
+            width: auto;
+            display: inline-block;
+        }
+
+        .btn-lock {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .btn-unlock {
+            background-color: #28a745;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+        }
+
+        .btn-promote {
+            background-color: #6f42c1;
+            color: white;
+        }
+
+            .btn-promote:hover {
+                background-color: #59359a;
+            }
+
+        @media (max-width: 900px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                order: 2;
+                text-align: center;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">📅 Đặt Lịch</div>
+        <div class="nav-links">
+            <a data-section="register" id="navReg">Đăng ký</a>
+            <a data-section="login" id="navLogin">Đăng nhập</a>
+
+            <a data-section="createSchedule" id="navCreate" class="hidden">➕ Tạo lịch</a>
+            <a data-section="list" id="navList" class="hidden">📋 Danh sách</a>
+            <a data-section="messages" id="navMsg" class="hidden">🔐 Tin nhắn</a>
+
+            <a data-section="admin" id="navAdmin" class="hidden admin-link">🛡️ Quản trị</a>
+
+            <button id="logoutBtn" style="margin-left:12px;display:none;width:auto;background-color:#dc3545;padding:5px 15px;">Đăng xuất</button>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="layout">
+            <div class="sidebar" id="welcomeSidebar">
+                <h2>Chào mừng bạn!</h2>
+                <p>Ứng dụng đặt lịch làm việc cá nhân với tiêu chuẩn bảo mật cao.</p>
+                <p>Mã hóa dữ liệu 2 chiều (Database & Application).</p>
+                <p>Hệ thống tin nhắn mật RSA.</p>
+            </div>
+
+            <div class="content">
+                <div class="card" id="registerSection">
+                    <h2>Đăng ký tài khoản</h2>
+                    <form id="registerForm">
+                        <input id="regUsername" type="text" placeholder="Tên đăng nhập" required>
+                        <input id="regEmail" type="email" placeholder="Email" required>
+                        <input id="regPassword" type="password" placeholder="Mật khẩu" required>
+                        <button type="submit">Đăng ký ngay</button>
+                    </form>
+                    <div class="login-links-container">
+                        <span></span> <button class="link-btn" data-section="login">Đã có tài khoản? Đăng nhập</button>
+                    </div>
+                </div>
+
+                <div class="card hidden" id="loginSection">
+                    <h2>Đăng nhập</h2>
+                    <form id="loginForm">
+                        <input id="loginUsername" type="text" placeholder="Tên đăng nhập" required>
+                        <input id="loginPassword" type="password" placeholder="Mật khẩu" required>
+                        <button type="submit">Đăng nhập</button>
+                    </form>
+                    <div class="login-links-container">
+                        <button class="link-btn" data-section="forgotPassword">Quên mật khẩu?</button>
+                        <button class="link-btn" data-section="register">Chưa có tài khoản? Đăng ký</button>
+                    </div>
+                </div>
+
+                <div class="card hidden" id="forgotPasswordSection">
+                    <h2>Quên mật khẩu</h2>
+                    <p style="color:#555;">Nhập Email bạn đã đăng ký để đặt lại mật khẩu.</p>
+                    <form id="forgotPasswordForm">
+                        <input id="forgotEmail" type="email" placeholder="Địa chỉ Email" required>
+                        <button type="submit">Gửi yêu cầu</button>
+                    </form>
+                    <div class="login-links-container">
+                        <span></span>
+                        <button class="link-btn" data-section="login">Quay lại Đăng nhập</button>
+                    </div>
+                </div>
+
+                <div class="card hidden" id="resetPasswordSection">
+                    <h2>Đặt lại Mật khẩu</h2>
+                    <p style="color:#dc3545;">Mã Token đã được điền tự động.</p>
+                    <form id="resetPasswordForm">
+                        <input id="resetEmail" type="email" placeholder="Email" required readonly>
+                        <input id="resetToken" type="text" placeholder="Token bảo mật" required readonly>
+                        <input id="resetNewPassword" type="password" placeholder="Mật khẩu mới" required>
+                        <button type="submit" style="background-color:#dc3545;">Xác nhận Đổi mật khẩu</button>
+                    </form>
+                    <div class="login-links-container">
+                        <span></span>
+                        <button class="link-btn" data-section="login">Quay lại Đăng nhập</button>
+                    </div>
+                </div>
+
+                <div class="card hidden" id="createScheduleSection">
+                    <h2>Đặt lịch làm việc mới</h2>
+                    <form id="scheduleForm">
+                        <input type="text" id="title" placeholder="Tiêu đề công việc" required>
+                        <textarea id="description" rows="3" placeholder="Nội dung chi tiết" required></textarea>
+                        <label>Bắt đầu:</label><input type="datetime-local" id="startTime" required>
+                        <label>Kết thúc:</label><input type="datetime-local" id="endTime" required>
+                        <button type="submit">Đặt lịch</button>
+                    </form>
+                </div>
+
+                <div class="card hidden" id="scheduleListSection">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h2 style="margin:0;">Lịch của tôi</h2>
+                        <button onclick="loadSchedules()" style="width:auto; padding:5px 15px; font-size:14px;">Làm mới</button>
+                    </div>
+                    <ul id="scheduleList"></ul>
+                </div>
+
+                <div class="card hidden" id="messagesSection">
+                    <h2 style="color:#28a745;">🔐 Hộp thư bảo mật (RSA)</h2>
+                    <div style="background:#fdfdfd; padding:15px; border:1px solid #eee; border-radius:8px; margin-bottom:30px;">
+                        <h3 style="margin-top:0;">Gửi tin nhắn mới</h3>
+                        <form id="msgForm">
+                            <input id="msgReceiver" placeholder="Người nhận (Username)" required>
+                            <textarea id="msgContent" rows="2" placeholder="Nội dung bí mật..." required></textarea>
+                            <button type="submit" style="background:#28a745;">Gửi tin</button>
+                        </form>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="margin:0;">Hộp thư đến</h3>
+                        <button onclick="loadMessages()" style="width:auto; padding:5px 15px; font-size:14px; background:#6c757d;">Kiểm tra tin nhắn</button>
+                    </div>
+                    <div id="inboxList"></div>
+                </div>
+
+                <div class="card hidden" id="adminSection">
+                    <h2 style="color:#dc3545; border-bottom: 2px solid #eee; padding-bottom:10px;"> Trung Tâm Quản Trị</h2>
+
+                    <div style="margin-bottom: 20px;">
+                        <button onclick="showAdminTab('users')" style="width:auto; margin-right:10px;"> Người dùng</button>
+                        <button onclick="showAdminTab('schedules')" style="width:auto; margin-right:10px; background-color:#17a2b8;"> Lịch trình</button>
+                        <button onclick="showAdminTab('logs')" style="width:auto; background-color:#6c757d;"> Nhật ký</button>
+                    </div>
+
+                    <div id="tab-users">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3>Quản lý Người Dùng</h3>
+                            <button onclick="loadUsers()" style="width:auto; padding:5px 15px; font-size:12px; background:#6c757d;">🔄 Tải lại</button>
+                        </div>
+                        <table id="userTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Vai trò</th>
+                                    <th>Sai</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div id="tab-schedules" class="hidden">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3> Tất cả Lịch Trình (Đã giải mã)</h3>
+                            <button onclick="loadAllSchedules()" style="width:auto; padding:5px 15px; font-size:12px; background:#6c757d;">🔄 Tải lại</button>
+                        </div>
+                        <table id="adminScheduleTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Người tạo</th>
+                                    <th>Tiêu đề</th>
+                                    <th style="width:40%">Nội dung (Đã giải mã)</th>
+                                    <th>Thời gian</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <div id="tab-logs" class="hidden">
+                        <h3> Nhật ký Hệ thống</h3>
+                        <table id="auditTable">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Người dùng</th>
+                                    <th>Hành động</th>
+                                    <th>Đối tượng</th>
+                                    <th>Kết quả</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2025 Ứng dụng Đặt lịch làm việc - Bảo mật cao</footer>
+
+    <script>
+        const API_BASE = "/api";
+        let token = localStorage.getItem('jwt') || null;
+        let userRole = localStorage.getItem('role') || null;
+        let isLoggedIn = !!token;
+
+        function updateUI() {
+            const sidebar = document.getElementById('welcomeSidebar');
+            const navReg = document.getElementById('navReg');
+            const navLog = document.getElementById('navLogin');
+            const navCreate = document.getElementById('navCreate');
+            const navList = document.getElementById('navList');
+            const navMsg = document.getElementById('navMsg');
+            const navAdmin = document.getElementById('navAdmin');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (isLoggedIn) {
+                sidebar.style.display = 'none';
+                navReg.classList.add('hidden');
+                navLog.classList.add('hidden');
+
+                navCreate.classList.remove('hidden');
+                navList.classList.remove('hidden');
+                navMsg.classList.remove('hidden');
+                logoutBtn.style.display = 'inline-block';
+
+                if (userRole === 'ADMIN') {
+                    navAdmin.classList.remove('hidden');
+                } else {
+                    navAdmin.classList.add('hidden');
+                }
+            } else {
+                sidebar.style.display = 'flex';
+                navReg.classList.remove('hidden');
+                navLog.classList.remove('hidden');
+
+                navCreate.classList.add('hidden');
+                navList.classList.add('hidden');
+                navMsg.classList.add('hidden');
+                navAdmin.classList.add('hidden');
+                logoutBtn.style.display = 'none';
+            }
+        }
+
+        function switchSection(id) {
+            document.querySelectorAll('.card').forEach(el => el.classList.add('hidden'));
+            const active = document.getElementById(id + 'Section');
+            if (active) active.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const navLink = document.querySelector(`a[data-section="${id}"]`);
+            if (navLink) navLink.classList.add('active');
+
+            if (id === 'list' && isLoggedIn) loadSchedules();
+            if (id === 'messages' && isLoggedIn) loadMessages();
+            if (id === 'admin' && isLoggedIn && userRole === 'ADMIN') {
+                showAdminTab('users');
+            }
+        }
+
+        window.showAdminTab = function (tabName) {
+            document.getElementById('tab-users').classList.add('hidden');
+            document.getElementById('tab-schedules').classList.add('hidden');
+            document.getElementById('tab-logs').classList.add('hidden');
+
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+            if (tabName === 'users') loadUsers();
+            if (tabName === 'schedules') loadAllSchedules();
+            if (tabName === 'logs') loadAuditLogs();
+        };
+
+        document.querySelectorAll('[data-section]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchSection(el.dataset.section);
+            });
+        });
+
+        document.getElementById('logoutBtn').onclick = () => {
+            localStorage.removeItem('jwt');
+            localStorage.removeItem('role');
+            token = null;
+            userRole = null;
+            isLoggedIn = false;
+            alert("Đăng xuất thành công");
+            updateUI();
+            switchSection('login');
+        };
+
+        async function apiPost(url, data) {
+            try {
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+                const res = await fetch(API_BASE + url, { method: 'POST', headers, body: JSON.stringify(data) });
+                const json = await res.json();
+                if (!res.ok) throw new Error(json.message || `HTTP Error: ${res.status}`);
+                return { ok: res.ok, data: json };
+            } catch (e) { return { ok: false, data: { message: e.message } }; }
+        }
+
+        async function apiGet(url) {
+            try {
+                const headers = {};
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+                const res = await fetch(API_BASE + url, { headers });
+                return await res.json();
+            } catch (e) { return null; }
+        }
+
+        document.getElementById('registerForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await apiPost('/auth/register', {
+                username: document.getElementById('regUsername').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value
+            });
+            if (res.ok) { alert('Đăng ký thành công!'); switchSection('login'); }
+            else alert('Lỗi: ' + res.data.message);
+        };
+
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await apiPost('/auth/login', {
+                username: document.getElementById('loginUsername').value,
+                password: document.getElementById('loginPassword').value
+            });
+            if (res.ok) {
+                token = res.data.token;
+                userRole = res.data.role || "USER";
+                localStorage.setItem('jwt', token);
+                localStorage.setItem('role', userRole);
+                isLoggedIn = true;
+                alert('Đăng nhập thành công! Vai trò: ' + userRole);
+                updateUI();
+                if (userRole === 'ADMIN') switchSection('admin');
+                else switchSection('createSchedule');
+            } else alert('Lỗi: ' + res.data.message);
+        };
+
+        document.getElementById('forgotPasswordForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value;
+            const res = await apiPost('/auth/forgot-password', { email });
+            if (res.ok) {
+                alert(res.data.Message || 'Kiểm tra email của bạn.');
+                if (res.data.ResetToken) {
+                    document.getElementById('resetEmail').value = email;
+                    document.getElementById('resetToken').value = res.data.ResetToken;
+                    switchSection('resetPassword');
+                } else {
+                    switchSection('login');
+                }
+                document.getElementById('forgotPasswordForm').reset();
+            } else alert('Lỗi: ' + res.data.message);
+        };
+
+        document.getElementById('resetPasswordForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await apiPost('/auth/reset-password', {
+                email: document.getElementById('resetEmail').value,
+                token: document.getElementById('resetToken').value,
+                newPassword: document.getElementById('resetNewPassword').value
+            });
+            if (res.ok) {
+                alert('Đặt lại mật khẩu thành công!');
+                document.getElementById('resetPasswordForm').reset();
+                switchSection('login');
+            } else alert('Lỗi: ' + res.data.message);
+        };
+
+        document.getElementById('scheduleForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const start = document.getElementById('startTime').value;
+            const end = document.getElementById('endTime').value;
+            if (!start || !end) { alert("Chọn ngày giờ!"); return; }
+            const res = await apiPost('/schedules', {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                startTime: new Date(start).toISOString(),
+                endTime: new Date(end).toISOString(),
+                securityLabelId: 1
+            });
+            if (res.ok) { alert('Đặt lịch thành công!'); switchSection('list'); }
+            else alert(res.data.message);
+        };
+
+        window.loadSchedules = async function () {
+            const list = document.getElementById('scheduleList');
+            list.innerHTML = '<li>Đang tải...</li>';
+            const data = await apiGet('/schedules/mine');
+            list.innerHTML = '';
+            if (!data || data.length === 0) { list.innerHTML = '<li>Chưa có lịch.</li>'; return; }
+            data.forEach(s => {
+                const li = document.createElement('li');
+                li.className = 'schedule-item';
+                li.innerHTML = `<strong>${s.title}</strong><br>${s.description}<br><small>🕒 ${new Date(s.startTime).toLocaleString()}</small>`;
+                list.appendChild(li);
+            });
+        };
+
+        document.getElementById('msgForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await apiPost('/notifications/send', {
+                receiverUsername: document.getElementById('msgReceiver').value,
+                messageContent: document.getElementById('msgContent').value
+            });
+            if (res.ok) { alert('Đã gửi tin nhắn!'); document.getElementById('msgContent').value = ''; }
+            else alert(res.data.message);
+        };
+
+        window.loadMessages = async function () {
+            const list = document.getElementById('inboxList');
+            list.innerHTML = '<p>Đang tải...</p>';
+            const data = await apiGet('/notifications/inbox');
+            list.innerHTML = '';
+            if (!data || data.length === 0) { list.innerHTML = '<p>Hộp thư trống.</p>'; return; }
+            data.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'msg-item';
+                div.innerHTML = `<div class="msg-header"><span>Từ: <strong>${m.sender}</strong></span><span>${m.sentAt}</span></div><div>${m.content}</div>`;
+                list.appendChild(div);
+            });
+        };
+
+        window.loadUsers = async function () {
+            const tbody = document.querySelector('#userTable tbody');
+            tbody.innerHTML = '<tr><td colspan="7">Đang tải...</td></tr>';
+            const users = await apiGet('/admin/users');
+
+            tbody.innerHTML = '';
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">Không có dữ liệu.</td></tr>'; return;
+            }
+            users.forEach(u => {
+                const tr = document.createElement('tr');
+
+                let roleBadgeClass = 'badge-user';
+                if (u.role === 'ADMIN') roleBadgeClass = 'badge-admin';
+                else if (u.role === 'NHAN_VIEN') roleBadgeClass = 'badge-active';
+
+                const statusBadge = u.isLocked
+                    ? '<span class="badge badge-lock">Locked</span>'
+                    : '<span class="badge badge-active">Active</span>';
+
+                const failedDisplay = u.failedCount > 0
+                    ? `<b style="color:red;">${u.failedCount}</b>`
+                    : `<span style="color:#ccc;">0</span>`;
+
+                let actionButtons = u.isLocked
+                    ? `<button class="action-btn btn-unlock" onclick="unlockUser(${u.id})"> Mở khóa</button>`
+                    : `<button class="action-btn btn-lock" onclick="lockUser(${u.id})"> Khóa</button>`;
+
+                if (u.role === 'USER') {
+                    actionButtons += `<button class="action-btn btn-promote" onclick="promoteUser(${u.id})"> Nâng quyền</button>`;
+                }
+
+                actionButtons += `<button class="action-btn btn-delete" onclick="deleteUser(${u.id})"> Xóa</button>`;
+
+                tr.innerHTML = `<td>${u.id}</td><td><b>${u.username}</b></td><td>${u.email}</td>
+                                    <td><span class="badge ${roleBadgeClass}">${u.role}</span></td>
+                                    <td style="text-align:center;">${failedDisplay}</td>
+                                    <td>${statusBadge}</td>
+                                    <td>${actionButtons}</td>`;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.loadAllSchedules = async function () {
+            const tbody = document.querySelector('#adminScheduleTable tbody');
+            tbody.innerHTML = '<tr><td colspan="5">Đang giải mã dữ liệu...</td></tr>';
+
+            const data = await apiGet('/admin/schedules');
+
+            tbody.innerHTML = '';
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Không có lịch trình nào.</td></tr>'; return;
+            }
+
+            data.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                        <td>${s.id}</td>
+                        <td><span class="badge badge-user">${s.username}</span></td>
+                        <td style="font-weight:bold; color:#0069ff;">${s.title}</td>
+                        <td style="color:#28a745;">${s.description}</td>
+                        <td>${s.timeRange}</td>
+                    `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.loadAuditLogs = async function () {
+            const tbody = document.querySelector('#auditTable tbody');
+            tbody.innerHTML = '<tr><td colspan="5">Đang tải...</td></tr>';
+            const logs = await apiGet('/admin/audit-logs');
+            tbody.innerHTML = '';
+            if (!logs || logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Không có dữ liệu.</td></tr>'; return;
+            }
+            logs.forEach(l => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${l.time}</td><td><b>${l.user}</b></td>
+                                    <td style="color:${l.action.includes('FAIL') ? 'red' : 'green'}">${l.action}</td>
+                                    <td>${l.object}</td><td>${l.result}</td>`;
+                tbody.appendChild(tr);
+            });
+        };
+
+        window.lockUser = async function (id) {
+            if (confirm('Bạn có chắc muốn khóa vĩnh viễn tài khoản này?')) {
+                const res = await apiPost(`/admin/users/${id}/lock`, {});
+                if (res.ok) { alert('Đã khóa thành công'); loadUsers(); } else alert(res.data.message);
+            }
+        };
+
+        window.unlockUser = async function (id) {
+            const res = await apiPost(`/admin/users/${id}/unlock`, {});
+            if (res.ok) { alert('Đã mở khóa'); loadUsers(); } else alert(res.data.message);
+        };
+
+        window.deleteUser = async function (id) {
+            if (confirm('Xóa vĩnh viễn user này và toàn bộ dữ liệu liên quan?')) {
+                const headers = { 'Authorization': 'Bearer ' + token };
+                await fetch(API_BASE + `/admin/users/${id}`, { method: 'DELETE', headers });
+                loadUsers();
+            }
+        };
+
+        window.promoteUser = async function (id) {
+            if (!confirm('Nâng quyền tài khoản này lên NHAN_VIEN?')) return;
+            const res = await apiPost(`/admin/users/${id}/promote`, {});
+            if (res.ok) { alert(res.data.message || 'Thành công!'); loadUsers(); }
+            else { alert('Lỗi: ' + res.data.message); }
+        };
+
+        updateUI();
+        if (isLoggedIn) {
+            if (userRole === 'ADMIN') switchSection('admin');
+            else switchSection('createSchedule');
+        } else {
+            switchSection('login');
+        }
+    </script>
+</body>
+</html>
